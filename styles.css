@@ -1,7 +1,7 @@
 body {
-    background-color: #121212;
+    background-color: #1e1e2f;
     color: #ffffff;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
@@ -12,21 +12,24 @@ body {
 
 .container {
     text-align: center;
-    padding: 20px;
-    border: 2px solid #333;
+    padding: 30px;
+    border: 1px solid #303040;
     border-radius: 10px;
-    background-color: #1e1e1e;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: #2a2a3d;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    margin: 20px;
 }
 
 .title {
-    font-size: 2.5em;
-    margin-bottom: 0.5em;
+    font-size: 2.2em;
+    margin-bottom: 1em;
+    color: #ffcc00;
 }
 
 .domain-description {
-    font-size: 1.5em;
-    color: #00ff00;
+    font-size: 1.3em;
+    color: #dddddd;
     margin-bottom: 1.5em;
 }
 
@@ -34,34 +37,64 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 label {
     margin: 0.5em 0;
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+    color: #bbbbbb;
 }
 
 input, textarea {
-    padding: 0.5em;
+    padding: 0.6em;
     margin: 0.5em 0;
     border-radius: 5px;
-    border: none;
-    width: 80%;
+    border: 1px solid #444;
+    width: 100%;
     max-width: 400px;
-    background-color: #2e2e2e;
+    background-color: #3a3a4d;
     color: #ffffff;
 }
 
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #ffcc00;
+    background-color: #444455;
+}
+
 button {
-    padding: 0.7em 1.5em;
-    background-color: #00ff00;
-    color: #121212;
+    padding: 0.7em 2em;
+    background-color: #ffcc00;
+    color: #1e1e2f;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
     margin-top: 1em;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #00cc00;
+    background-color: #e6b800;
+}
+
+@media (max-width: 600px) {
+    .container {
+        width: 90%;
+    }
+
+    .title {
+        font-size: 1.8em;
+    }
+
+    .domain-description {
+        font-size: 1.1em;
+    }
+
+    input, textarea, button {
+        font-size: 0.9em;
+    }
 }
