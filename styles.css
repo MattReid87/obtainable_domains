@@ -67,8 +67,8 @@ input:focus, textarea:focus {
 
 button {
     padding: 0.7em 2em;
-    background-color: #ffcc00;
-    color: #1e1e2f;
+    background-color: #8e44ad;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -78,7 +78,7 @@ button {
 }
 
 button:hover {
-    background-color: #e6b800;
+    background-color: #732d91;
 }
 
 @media (max-width: 600px) {
