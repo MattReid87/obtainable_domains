@@ -1,0 +1,16 @@
+{
+  "domains": [
+    {
+      "name": "example.com",
+      "description": "A great domain for your next project.",
+      "keywords": "example, domain, project",
+      "contact_email": "contact@example.com"
+    },
+    {
+      "name": "anotherdomain.com",
+      "description": "Another premium domain available for sale.",
+      "keywords": "premium, domain, sale",
+      "contact_email": "contact@anotherdomain.com"
+    }
+  ]
+}
