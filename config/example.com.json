@@ -1,0 +1,16 @@
+{
+    "domain": "example.com",
+    "tagline": "The perfect domain for your next big project",
+    "price": "$5,000",
+    "features": [
+        "Short, memorable 7-letter domain",
+        "Perfect for tech startups and SaaS",
+        "High search volume keywords",
+        "Established domain with history"
+    ],
+    "seo": {
+        "title": "Example.com - Premium Domain Name For Sale",
+        "description": "Acquire example.com, a premium domain perfect for your business. Short, memorable, and brandable.",
+        "keywords": "example domain, premium domain, domain for sale"
+    }
+}
