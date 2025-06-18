@@ -118,8 +118,8 @@ form.addEventListener('submit', async (e) => {
     try {
         let response;
         
-        // If using Cloudflare Worker proxy
-        if (window.location.hostname.includes('pages.dev') || config.useWorkerProxy) {
+        // Always use the Pages Function API endpoint when deployed
+        if (window.location.hostname.includes('pages.dev') || window.location.hostname !== 'localhost') {
             response = await fetch('/api/contact', {
                 method: 'POST',
                 headers: {
@@ -128,9 +128,9 @@ form.addEventListener('submit', async (e) => {
                 body: JSON.stringify(data)
             });
         } else {
-            // Direct Discord webhook (for development)
+            // Direct Discord webhook (for local development only)
             if (!config.discordWebhook) {
-                throw new Error('Discord webhook not configured');
+                throw new Error('Discord webhook not configured for local development');
             }
             
             response = await fetch(config.discordWebhook, {

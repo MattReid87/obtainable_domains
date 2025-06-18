@@ -10,7 +10,18 @@ This is a premium domain sales landing page designed to be deployed on multiple 
 
 ```
 obtainable_domains/
-├── index.html          # Self-contained landing page (all styles/scripts inline)
+├── index.html          # Main landing page
+├── css/
+│   └── styles.css      # All styles
+├── js/
+│   └── main.js         # Application logic
+├── config/
+│   ├── config.js       # Global configuration
+│   └── *.json          # Domain-specific configs
+├── functions/
+│   └── api/
+│       └── contact.js  # Cloudflare Pages Function for form handling
+├── README.md           # Deployment instructions
 └── CLAUDE.md          # This file
 ```
 
@@ -78,7 +89,7 @@ Replace `YOUR_DISCORD_WEBHOOK_URL_HERE` in index.html:587 with your actual Disco
 8. **Email Capture**: Newsletter signup for domain investors
 
 ### Cloudflare-Specific Enhancements
-1. **Workers**: Proxy Discord webhook, add rate limiting
+1. **Pages Functions**: Secure Discord webhook proxy (already implemented in `/functions/api/contact.js`)
 2. **KV Storage**: Store inquiries, domain configurations
 3. **Turnstile**: Bot protection for contact form
 4. **Web Analytics**: Privacy-friendly analytics
@@ -86,8 +97,9 @@ Replace `YOUR_DISCORD_WEBHOOK_URL_HERE` in index.html:587 with your actual Disco
 
 ## Code Style Guidelines
 
-- All code is currently inline in index.html for simplicity
+- Code is organized into separate files for maintainability
 - CSS uses modern properties (CSS Grid, Flexbox, Custom Properties)
 - JavaScript is vanilla ES6+ (no frameworks)
 - Mobile-first responsive design approach
 - Dark theme with accent colors for visual hierarchy
+- Cloudflare Pages Functions for serverless backend

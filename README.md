@@ -31,7 +31,10 @@ discordWebhook: 'YOUR_DISCORD_WEBHOOK_URL_HERE',
 4. Use these build settings:
    - Build command: (leave empty)
    - Build output directory: `/`
-5. Deploy!
+5. Before deploying, go to "Environment variables" and add:
+   - `DISCORD_WEBHOOK_URL` = Your Discord webhook URL (required)
+   - `TURNSTILE_SECRET_KEY` = Your Turnstile secret key (optional)
+6. Deploy!
 
 ### 3. Add Custom Domains
 
@@ -80,21 +83,15 @@ Create a JSON file in the `config` folder named after your domain:
 
 ## Security Enhancements
 
-### 1. Hide Discord Webhook URL (Recommended)
+### 1. Discord Webhook Security (Automatic!)
 
-Deploy the included Cloudflare Worker to proxy form submissions:
+Your Discord webhook URL is automatically protected when deployed to Cloudflare Pages:
 
-1. Go to Cloudflare Workers
-2. Create a new Worker
-3. Copy the code from `workers/contact-proxy.js`
-4. Set environment variables:
-   - `DISCORD_WEBHOOK_URL`: Your Discord webhook
-   - `TURNSTILE_SECRET_KEY`: Your Turnstile secret (optional)
-5. Deploy and note the Worker URL
-6. Update `config/config.js`:
-   ```javascript
-   useWorkerProxy: true
-   ```
+1. The `/functions/api/contact.js` file handles form submissions securely
+2. In Cloudflare Pages settings, add these environment variables:
+   - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL
+   - `TURNSTILE_SECRET_KEY`: Your Turnstile secret key (optional)
+3. That's it! The webhook URL is never exposed to the client
 
 ### 2. Add Bot Protection
 
@@ -126,8 +123,9 @@ obtainable_domains/
 ├── config/
 │   ├── config.js       # Global configuration
 │   └── *.json          # Domain-specific configs
-└── workers/
-    └── contact-proxy.js # Cloudflare Worker for secure form handling
+└── functions/
+    └── api/
+        └── contact.js  # Cloudflare Pages Function for secure form handling
 ```
 
 ## Customization
