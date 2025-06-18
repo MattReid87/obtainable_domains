@@ -14,7 +14,12 @@ const tld = domainParts[domainParts.length - 1];
 function initializeDomain() {
     // Update domain display
     document.getElementById('domainName').textContent = currentDomain;
-    document.getElementById('domainLength').textContent = currentDomain.replace(/\./g, '').length;
+    
+    // Count only characters before the TLD (excluding dots)
+    const domainWithoutTLD = currentDomain.substring(0, currentDomain.lastIndexOf('.'));
+    const characterCount = domainWithoutTLD.replace(/\./g, '').length;
+    document.getElementById('domainLength').textContent = characterCount;
+    
     document.getElementById('domainTLD').textContent = '.' + tld;
     
     // Update page title and meta
