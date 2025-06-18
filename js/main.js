@@ -146,7 +146,7 @@ form.addEventListener('submit', async (e) => {
                 body: JSON.stringify({
                     embeds: [{
                         title: `New Inquiry for ${currentDomain}`,
-                        color: 6366241, // Purple color
+                        color: 9061110, // Purple color (#8b5cf6 in decimal)
                         fields: [
                             { name: 'Name', value: data.name, inline: true },
                             { name: 'Email', value: data.email, inline: true },

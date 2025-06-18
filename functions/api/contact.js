@@ -39,7 +39,7 @@ export async function onRequestPost(context) {
     const discordPayload = {
       embeds: [{
         title: `New Inquiry for ${data.domain}`,
-        color: 6366241, // Purple color
+        color: 9061110, // Purple color (#8b5cf6 in decimal)
         fields: [
           { name: 'Name', value: data.name, inline: true },
           { name: 'Email', value: data.email, inline: true },
