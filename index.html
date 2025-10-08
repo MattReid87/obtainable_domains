@@ -177,25 +177,16 @@
     <!-- Cloudflare Web Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": ""}'></script>
     
-    <!-- Cloudflare Turnstile -->
+    <!-- Initialize Turnstile and Analytics -->
     <script>
-        // Load Turnstile if configured
-        if (window.DOMAIN_CONFIG && window.DOMAIN_CONFIG.turnstileSiteKey) {
-            const script = document.createElement('script');
-            script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-            script.async = true;
-            script.onload = function() {
-                // Render Turnstile widget
-                if (window.turnstile) {
-                    window.turnstile.render('#turnstile-container', {
-                        sitekey: window.DOMAIN_CONFIG.turnstileSiteKey,
-                        theme: 'dark'
-                    });
-                }
-            };
-            document.head.appendChild(script);
-        }
-        
+        // Initialize Turnstile after page loads
+        window.addEventListener('load', function() {
+            // Turnstile will be initialized by main.js after domain config loads
+            if (window.DOMAIN_CONFIG && window.DOMAIN_CONFIG.turnstileSiteKey && typeof renderTurnstile === 'function') {
+                renderTurnstile();
+            }
+        });
+
         // Configure analytics token if provided
         if (window.DOMAIN_CONFIG && window.DOMAIN_CONFIG.analyticsToken) {
             const beacon = document.querySelector('[data-cf-beacon]');

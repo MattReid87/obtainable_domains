@@ -1,6 +1,7 @@
 /**
  * Cloudflare Pages Function to handle contact form submissions
  * This keeps your Discord webhook URL secure and adds validation
+ * Includes rate limiting to prevent spam
  */
 
 export async function onRequestPost(context) {
@@ -8,12 +9,34 @@ export async function onRequestPost(context) {
   const { env, request } = context;
   
   try {
+    // Get client IP for rate limiting
+    const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
+
+    // Block known spam IPs
+    const knownSpamIPs = ['91.84.110.151', '91.201.115.242'];
+    if (knownSpamIPs.includes(clientIP)) {
+      return new Response('Forbidden', { status: 403 });
+    }
+
+    // Rate limiting check (if KV namespace is bound)
+    if (env.RATE_LIMIT) {
+      const rateLimitPassed = await checkRateLimit(env.RATE_LIMIT, clientIP);
+      if (!rateLimitPassed) {
+        return new Response('Too many requests. Please try again later.', { status: 429 });
+      }
+    }
+
     // Parse request body
     const data = await request.json();
 
     // Validate required fields
     if (!data.name || !data.email || !data.message) {
       return new Response('Missing required fields', { status: 400 });
+    }
+
+    // Basic spam detection
+    if (isLikelySpam(data)) {
+      return new Response('Submission rejected', { status: 403 });
     }
 
     // Verify Turnstile token if configured
@@ -117,4 +140,154 @@ async function verifyTurnstile(token, secretKey, ip) {
 
   const result = await response.json();
   return result.success;
+}
+
+// Rate limiting using Cloudflare KV
+async function checkRateLimit(kvNamespace, clientIP) {
+  const rateLimitKey = `ratelimit:${clientIP}`;
+  const now = Date.now();
+  const windowMs = 60 * 60 * 1000; // 1 hour window
+  const maxRequests = 3; // Max 3 submissions per hour per IP
+
+  // Get current count
+  const rateLimitData = await kvNamespace.get(rateLimitKey, { type: 'json' });
+
+  if (!rateLimitData) {
+    // First request from this IP
+    await kvNamespace.put(rateLimitKey, JSON.stringify({
+      count: 1,
+      firstRequest: now
+    }), { expirationTtl: 3600 }); // Expire after 1 hour
+    return true;
+  }
+
+  // Check if window has expired
+  if (now - rateLimitData.firstRequest > windowMs) {
+    // Reset counter
+    await kvNamespace.put(rateLimitKey, JSON.stringify({
+      count: 1,
+      firstRequest: now
+    }), { expirationTtl: 3600 });
+    return true;
+  }
+
+  // Check if limit exceeded
+  if (rateLimitData.count >= maxRequests) {
+    return false;
+  }
+
+  // Increment counter
+  await kvNamespace.put(rateLimitKey, JSON.stringify({
+    count: rateLimitData.count + 1,
+    firstRequest: rateLimitData.firstRequest
+  }), { expirationTtl: 3600 });
+
+  return true;
+}
+
+// Basic spam detection heuristics
+function isLikelySpam(data) {
+  const { name, email, message, budget, timeline } = data;
+
+  // Check for gibberish text (random characters with no vowel patterns)
+  // Real names/messages typically have vowel-consonant patterns
+  if (isGibberish(name) || isGibberish(message)) {
+    return true;
+  }
+
+  // Check budget and timeline for gibberish if provided
+  if (budget && budget !== 'Not specified' && isGibberish(budget)) {
+    return true;
+  }
+  if (timeline && timeline !== 'Not specified' && isGibberish(timeline)) {
+    return true;
+  }
+
+  // Check for common spam patterns
+  const spamPatterns = [
+    /\b(viagra|cialis|porn|casino|lottery|winner)\b/i,
+    /\b(click here|buy now|limited time|act now)\b/i,
+    /https?:\/\/.*https?:\/\//i, // Multiple URLs
+    /<script|<iframe|javascript:/i, // Script injection attempts
+  ];
+
+  const fullText = `${name} ${email} ${message}`.toLowerCase();
+
+  for (const pattern of spamPatterns) {
+    if (pattern.test(fullText)) {
+      return true;
+    }
+  }
+
+  // Check for excessive URLs (more than 3)
+  const urlCount = (fullText.match(/https?:\/\//g) || []).length;
+  if (urlCount > 3) {
+    return true;
+  }
+
+  // Check for very short messages (likely bot)
+  if (message.length < 10) {
+    return true;
+  }
+
+  // Check for all caps message (common spam tactic)
+  if (message === message.toUpperCase() && message.length > 20) {
+    return true;
+  }
+
+  // Check for email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return true;
+  }
+
+  // Block the specific spam IPs we've identified
+  const knownSpamIPs = ['91.84.110.151', '91.201.115.242'];
+  // This will be checked in the main function
+
+  return false;
+}
+
+// Detect gibberish text (random character strings)
+function isGibberish(text) {
+  if (!text || text.length < 3) return false;
+
+  // Convert to lowercase for analysis
+  const lower = text.toLowerCase();
+
+  // Check 1: Too many consonants in a row (more than 4)
+  if (/[bcdfghjklmnpqrstvwxyz]{5,}/i.test(text)) {
+    return true;
+  }
+
+  // Check 2: No vowels at all in a word longer than 3 characters
+  if (text.length > 3 && !/[aeiou]/i.test(text)) {
+    return true;
+  }
+
+  // Check 3: Mixed case randomness (more than 40% uppercase in middle of text)
+  const upperCount = (text.match(/[A-Z]/g) || []).length;
+  const lowerCount = (text.match(/[a-z]/g) || []).length;
+  const totalLetters = upperCount + lowerCount;
+
+  if (totalLetters > 5 && upperCount / totalLetters > 0.4 && upperCount / totalLetters < 0.9) {
+    // Random mixed case like "WCEfVIlsgX" or "eQucwLmTINC"
+    return true;
+  }
+
+  // Check 4: Very low vowel ratio (less than 20% for text longer than 5 chars)
+  const vowelCount = (lower.match(/[aeiou]/g) || []).length;
+  if (text.length > 5 && vowelCount / text.length < 0.2) {
+    return true;
+  }
+
+  // Check 5: Repeating character patterns that look random (e.g., "HrpmFBMjHguHBmL")
+  // Calculate entropy - gibberish has high variation
+  const uniqueChars = new Set(lower.split('')).size;
+  if (text.length > 8 && uniqueChars / text.length > 0.7) {
+    // Almost every character is unique = likely random
+    return true;
+  }
+
+  return false;
 }

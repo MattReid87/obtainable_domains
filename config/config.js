@@ -6,7 +6,7 @@ window.DOMAIN_CONFIG = {
     
     // Cloudflare Turnstile site key (optional but recommended)
     // Get this from: https://dash.cloudflare.com/turnstile
-    turnstileSiteKey: '',
+    turnstileSiteKey: 'YOUR_TURNSTILE_SITE_KEY_HERE', // Replace with your actual site key
     
     // Cloudflare Web Analytics token (optional)
     // Get this from: https://dash.cloudflare.com/analytics-web

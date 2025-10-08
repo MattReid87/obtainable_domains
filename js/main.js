@@ -57,6 +57,13 @@ function applyDomainConfig(domainConfig) {
     if (domainConfig.price) {
         document.getElementById('domainPrice').textContent = domainConfig.price;
     }
+
+    // Override Turnstile site key if domain-specific one is provided
+    if (domainConfig.turnstileSiteKey) {
+        config.turnstileSiteKey = domainConfig.turnstileSiteKey;
+        // Re-render Turnstile with domain-specific key
+        renderTurnstile();
+    }
 }
 
 // Update features list
@@ -227,6 +234,44 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// Render Turnstile widget
+function renderTurnstile() {
+    if (!config.turnstileSiteKey) return;
+
+    // Load Turnstile script if not already loaded
+    if (!window.turnstile) {
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+        script.async = true;
+        script.defer = true;
+        script.onload = function() {
+            renderTurnstileWidget();
+        };
+        document.head.appendChild(script);
+    } else {
+        // Script already loaded, just render the widget
+        renderTurnstileWidget();
+    }
+}
+
+// Render the actual Turnstile widget
+function renderTurnstileWidget() {
+    if (!window.turnstile || !config.turnstileSiteKey) return;
+
+    const container = document.getElementById('turnstile-container');
+    if (!container) return;
+
+    // Clear existing widget if any
+    container.innerHTML = '';
+
+    // Render new widget
+    window.turnstile.render('#turnstile-container', {
+        sitekey: config.turnstileSiteKey,
+        theme: 'dark',
+        size: 'normal'
+    });
+}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', initializeDomain);
