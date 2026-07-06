@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Domain For Sale</title>
-    <meta name="description" content="This premium domain is available for purchase. Make an offer today!">
+    <meta name="description" content="This premium domain is available. Grab it before someone else does.">
     <meta property="og:title" content="Domain For Sale">
-    <meta property="og:description" content="Premium domain available for purchase">
+    <meta property="og:description" content="Premium domain available — make an offer">
     <meta property="og:type" content="website">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
@@ -21,129 +21,98 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌐%3C/text%3E%3C/svg%3E">
 </head>
 <body>
-    <!-- Aurora background -->
-    <div class="aurora-bg" aria-hidden="true">
-        <span class="orb orb-1"></span>
-        <span class="orb orb-2"></span>
-        <span class="orb orb-3"></span>
+    <!-- NAV -->
+    <nav class="nav">
+        <div class="nav-brand">Obtainable Domains</div>
+        <div class="nav-right">
+            <span class="nav-status"><span class="dot"></span>Available</span>
+            <a href="#claim" class="nav-btn">Make offer →</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+        <div class="tag">▶ This domain is for sale</div>
+
+        <div class="sticker">GRAB<br>IT</div>
+
+        <div class="hero-card">
+            <div class="hero-kicker">// registry &mdash; unclaimed asset</div>
+            <h1 class="domain">
+                <span class="domain-name" id="domainName">loading</span><span class="domain-tld" id="domainTLD">.com</span><span class="caret"></span>
+            </h1>
+        </div>
+
+        <div class="hero-foot">
+            <p class="hero-lede">A name people remember after hearing it once. Buy it outright, we handle the handover, and it&rsquo;s yours for good.</p>
+            <a href="#claim" class="hero-cta">Claim this name ↓</a>
+        </div>
+    </header>
+
+    <!-- STAT CHIPS -->
+    <section class="chips">
+        <div class="chip chip-white">
+            <div class="chip-num" id="domainLength">0</div>
+            <div class="chip-label">Characters</div>
+        </div>
+        <div class="chip chip-blue">
+            <div class="chip-num" id="domainExt">.com</div>
+            <div class="chip-label">Extension</div>
+        </div>
+        <div class="chip chip-white">
+            <div class="chip-num sm" id="domainAge">Available</div>
+            <div class="chip-label">Status</div>
+        </div>
+        <div class="chip chip-coral">
+            <div class="chip-num sm" id="domainPrice">Make offer</div>
+            <div class="chip-label">Price</div>
+        </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee">
+        <div class="marquee-track">
+            <span id="marquee1"></span>
+            <span id="marquee2"></span>
+        </div>
     </div>
 
-    <div class="container">
-        <header class="header">
-            <div class="badge">
-                <span class="badge-dot"></span>
-                Available now — welcome home
-            </div>
-
-            <!-- Mock browser address bar -->
-            <div class="browser-bar">
-                <div class="browser-dots">
-                    <span></span><span></span><span></span>
-                </div>
-                <div class="browser-url">
-                    <span class="lock">&#128274;</span>
-                    <span class="url-text">https://<span id="addressDomain">example.com</span></span>
-                    <span class="caret"></span>
-                </div>
-            </div>
-
-            <h1 class="domain-display" id="domainName">Loading…</h1>
-            <p class="tagline">A calm, considered name for something you’ll be proud of. Quietly premium, and ready when you are.</p>
-        </header>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number" id="domainLength">-</div>
-                <div class="stat-label">Characters</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number stat-alt" id="domainAge">Available</div>
-                <div class="stat-label">Status</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="domainTLD">.com</div>
-                <div class="stat-label">Extension</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number stat-sm" id="domainPrice">Make offer</div>
-                <div class="stat-label">Price</div>
-            </div>
-        </div>
-
-        <div class="content-grid">
-            <div class="card">
-                <h2>
-                    <span class="card-icon icon-mint">&#9670;</span>
-                    Why this name
-                </h2>
-                <ul class="features-list">
-                    <li>
-                        <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Memorable and brandable
-                    </li>
-                    <li>
-                        <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Easy to say, spell, and share
-                    </li>
-                    <li>
-                        <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Perfect fit for your industry
-                    </li>
-                    <li>
-                        <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Instant brand recognition
-                    </li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <h2>
-                    <span class="card-icon icon-violet">&#9670;</span>
-                    A smart move
-                </h2>
-                <ul class="features-list">
-                    <li>
-                        <svg class="check-icon check-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Domain values climb year over year
-                    </li>
-                    <li>
-                        <svg class="check-icon check-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        One purchase, a lifetime asset
-                    </li>
-                    <li>
-                        <svg class="check-icon check-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Concierge transfer assistance
-                    </li>
-                    <li>
-                        <svg class="check-icon check-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Secure escrow available
-                    </li>
+    <!-- WHY -->
+    <section class="why">
+        <div class="why-wrap">
+            <div class="why-card why-light">
+                <div class="why-tag">01 · Why this name</div>
+                <ul class="why-list">
+                    <li><span class="arr">→</span>Memorable the first time it&rsquo;s heard</li>
+                    <li><span class="arr">→</span>Brandable on a logo, an inbox, a billboard</li>
+                    <li><span class="arr">→</span>Reads clean in search and out loud</li>
+                    <li><span class="arr">→</span>Instantly recognisable</li>
                 </ul>
             </div>
         </div>
+        <div class="why-wrap">
+            <div class="why-card why-dark">
+                <div class="why-tag why-tag-coral">02 · Smart to own</div>
+                <ul class="why-list">
+                    <li><span class="arr arr-lime">→</span>Good names appreciate over time</li>
+                    <li><span class="arr arr-lime">→</span>One purchase, owned outright &mdash; an asset</li>
+                    <li><span class="arr arr-lime">→</span>Concierge transfer, start to finish</li>
+                    <li><span class="arr arr-lime">→</span>Secure escrow available</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-        <div class="contact-section">
-            <h2 class="contact-title">Start the conversation</h2>
-            <p class="contact-sub">Share your plans and a budget in mind — we reply within a day.</p>
+    <!-- CLAIM / FORM -->
+    <section class="claim" id="claim">
+        <div class="claim-card">
+            <div class="claim-head">
+                <h2>Make it<br>yours</h2>
+                <div class="claim-note">We reply within<br>one business day</div>
+            </div>
 
             <div class="message success" id="successMessage">
-                ✓ Received — thank you. We’ll be in touch very soon.
+                ✓ Got it! Your message is in &mdash; we&rsquo;ll be in touch shortly.
             </div>
             <div class="message error" id="errorMessage">
                 ✗ Something went wrong. Please try again or email us directly.
@@ -156,20 +125,20 @@
                         <input type="text" id="name" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="email">Email address *</label>
+                        <label for="email">Email *</label>
                         <input type="email" id="email" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="budget">Budget range</label>
-                        <input type="text" id="budget" name="budget" placeholder="e.g. $1,000 – $5,000">
+                        <label for="budget">Budget</label>
+                        <input type="text" id="budget" name="budget" placeholder="$1,000 – $5,000">
                     </div>
                     <div class="form-group">
                         <label for="timeline">Timeline</label>
-                        <input type="text" id="timeline" name="timeline" placeholder="e.g. within 30 days">
+                        <input type="text" id="timeline" name="timeline" placeholder="Within 30 days">
                     </div>
                     <div class="form-group full-width">
                         <label for="message">Message *</label>
-                        <textarea id="message" name="message" required placeholder="Tell us what you’d build with this name…"></textarea>
+                        <textarea id="message" name="message" rows="3" required placeholder="Tell us what you'd build with this name…"></textarea>
                     </div>
 
                     <!-- Cloudflare Turnstile will be inserted here if configured -->
@@ -178,17 +147,20 @@
                     <div class="form-group full-width">
                         <button type="submit" class="submit-btn">
                             <span class="spinner" id="spinner"></span>
-                            Send my message
+                            <span>SEND IT →</span>
                         </button>
                     </div>
                 </div>
             </form>
         </div>
+    </section>
 
-        <footer class="footer">
-            <p>© 2026 Obtainable Domains. All rights reserved. | Secure &amp; Confidential</p>
-        </footer>
-    </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="foot-brand">Obtainable Domains</div>
+        <div>Secure &amp; confidential</div>
+        <div>© 2026</div>
+    </footer>
 
     <!-- Configuration -->
     <script src="config/config.js"></script>
@@ -201,14 +173,12 @@
 
     <!-- Initialize Turnstile and Analytics -->
     <script>
-        // Initialize Turnstile after page loads
         window.addEventListener('load', function() {
             if (window.DOMAIN_CONFIG && window.DOMAIN_CONFIG.turnstileSiteKey && typeof renderTurnstile === 'function') {
                 renderTurnstile();
             }
         });
 
-        // Configure analytics token if provided
         if (window.DOMAIN_CONFIG && window.DOMAIN_CONFIG.analyticsToken) {
             const beacon = document.querySelector('[data-cf-beacon]');
             if (beacon) {

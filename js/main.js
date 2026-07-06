@@ -11,9 +11,11 @@ const domainParts = currentDomain.split('.');
 const tld = domainParts[domainParts.length - 1];
 
 // Animate a number counting up to a target value
-function animateCount(el, target, duration = 950) {
+function animateCount(el, target, duration = 1000) {
     if (!el) return;
+    el.textContent = target; // fallback: correct value immediately
     const start = performance.now();
+    el.textContent = 0;
     const step = (now) => {
         const p = Math.min(1, (now - start) / duration);
         const eased = 1 - Math.pow(1 - p, 3);
@@ -29,21 +31,30 @@ function animateCount(el, target, duration = 950) {
 
 // Initialize domain display
 function initializeDomain() {
-    // Update domain display
-    document.getElementById('domainName').textContent = currentDomain;
+    const dot = currentDomain.lastIndexOf('.');
+    const namePart = dot > -1 ? currentDomain.slice(0, dot) : currentDomain;
+    const tldPart = dot > -1 ? currentDomain.slice(dot) : '';
 
-    // Fill the mock browser address bar
-    const addressDomain = document.getElementById('addressDomain');
-    if (addressDomain) {
-        addressDomain.textContent = currentDomain;
-    }
+    // Hero lockup
+    const nameEl = document.getElementById('domainName');
+    const tldEl = document.getElementById('domainTLD');
+    if (nameEl) nameEl.textContent = namePart;
+    if (tldEl) tldEl.textContent = tldPart;
 
-    // Count only characters before the TLD (excluding dots)
-    const domainWithoutTLD = currentDomain.substring(0, currentDomain.lastIndexOf('.'));
-    const characterCount = domainWithoutTLD.replace(/\./g, '').length;
+    // Chip: extension
+    const extEl = document.getElementById('domainExt');
+    if (extEl) extEl.textContent = '.' + tld;
+
+    // Chip: character count (before the TLD, excluding dots)
+    const characterCount = namePart.replace(/\./g, '').length;
     animateCount(document.getElementById('domainLength'), characterCount);
 
-    document.getElementById('domainTLD').textContent = '.' + tld;
+    // Marquee text
+    const marqueeText = ('\u2605 ' + currentDomain + ' available \u2605 for sale ').repeat(5);
+    const m1 = document.getElementById('marquee1');
+    const m2 = document.getElementById('marquee2');
+    if (m1) m1.textContent = marqueeText;
+    if (m2) m2.textContent = marqueeText;
 
     // Update page title and meta
     document.title = `${currentDomain} - Premium Domain For Sale`;
@@ -72,7 +83,8 @@ async function loadDomainConfig() {
 // Apply domain-specific configuration
 function applyDomainConfig(domainConfig) {
     if (domainConfig.tagline) {
-        document.querySelector('.tagline').textContent = domainConfig.tagline;
+        const lede = document.querySelector('.hero-lede');
+        if (lede) lede.textContent = domainConfig.tagline;
     }
     if (domainConfig.features) {
         updateFeaturesList(domainConfig.features);
@@ -81,24 +93,18 @@ function applyDomainConfig(domainConfig) {
         document.getElementById('domainPrice').textContent = domainConfig.price;
     }
 
-    // Override Turnstile site key if domain-specific one is provided
     if (domainConfig.turnstileSiteKey) {
         config.turnstileSiteKey = domainConfig.turnstileSiteKey;
         renderTurnstile();
     }
 }
 
-// Update features list (first "Why this name" card)
+// Update the first "Why this name" list from a features array
 function updateFeaturesList(features) {
-    const featuresList = document.querySelector('.features-list');
-    if (featuresList && features.length > 0) {
-        featuresList.innerHTML = features.map(feature => `
-            <li>
-                <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                ${feature}
-            </li>
+    const list = document.querySelector('.why-list');
+    if (list && features.length > 0) {
+        list.innerHTML = features.map(feature => `
+            <li><span class="arr">&rarr;</span>${feature}</li>
         `).join('');
     }
 }
@@ -112,15 +118,12 @@ const submitBtn = form.querySelector('.submit-btn');
 
 function setSubmitting(isSubmitting) {
     submitBtn.disabled = isSubmitting;
-    if (spinner) {
-        spinner.style.display = isSubmitting ? 'inline-block' : 'none';
-    }
+    if (spinner) spinner.style.display = isSubmitting ? 'inline-block' : 'none';
 }
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Hide any existing messages
     successMsg.style.display = 'none';
     errorMsg.style.display = 'none';
 
@@ -128,16 +131,14 @@ form.addEventListener('submit', async (e) => {
     if (config.turnstileSiteKey) {
         const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
         if (!turnstileResponse || !turnstileResponse.value) {
-            errorMsg.textContent = 'Please complete the security challenge';
+            errorMsg.textContent = '✗ Please complete the security challenge';
             errorMsg.style.display = 'block';
             return;
         }
     }
 
-    // Show loading state
     setSubmitting(true);
 
-    // Get form data
     const formData = new FormData(form);
     const data = {
         domain: currentDomain,
@@ -149,7 +150,6 @@ form.addEventListener('submit', async (e) => {
         timestamp: new Date().toISOString()
     };
 
-    // Add Turnstile token if available
     if (config.turnstileSiteKey) {
         data.turnstileToken = formData.get('cf-turnstile-response');
     }
@@ -161,9 +161,7 @@ form.addEventListener('submit', async (e) => {
         if (window.location.hostname.includes('pages.dev') || window.location.hostname !== 'localhost') {
             response = await fetch('/api/contact', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
         } else {
@@ -174,13 +172,11 @@ form.addEventListener('submit', async (e) => {
 
             response = await fetch(config.discordWebhook, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     embeds: [{
                         title: `New Inquiry for ${currentDomain}`,
-                        color: 8317656, // Mint (#7fe6c8 in decimal)
+                        color: 2835124, // Acid (#2B44FF? use lime) -> keep brand blue
                         fields: [
                             { name: 'Name', value: data.name, inline: true },
                             { name: 'Email', value: data.email, inline: true },
@@ -199,18 +195,9 @@ form.addEventListener('submit', async (e) => {
             successMsg.style.display = 'block';
             form.reset();
 
-            // Reset Turnstile if present
-            if (window.turnstile) {
-                window.turnstile.reset();
-            }
+            if (window.turnstile) window.turnstile.reset();
 
-            // Track conversion event
-            trackEvent('form_submission', {
-                domain: currentDomain,
-                success: true
-            });
-
-            // Scroll to success message
+            trackEvent('form_submission', { domain: currentDomain, success: true });
             successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
             throw new Error('Failed to send message');
@@ -219,25 +206,17 @@ form.addEventListener('submit', async (e) => {
         console.error('Error:', error);
         errorMsg.style.display = 'block';
         errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-        trackEvent('form_error', {
-            domain: currentDomain,
-            error: error.message
-        });
+        trackEvent('form_error', { domain: currentDomain, error: error.message });
     } finally {
-        // Reset button state
         setSubmitting(false);
     }
 });
 
 // Analytics tracking
 function trackEvent(eventName, eventData) {
-    // Cloudflare Web Analytics
     if (window.zaraz && window.zaraz.track) {
         window.zaraz.track(eventName, eventData);
     }
-
-    // Google Analytics (if added)
     if (window.gtag) {
         window.gtag('event', eventName, eventData);
     }
@@ -248,9 +227,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-        }
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
     });
 });
 
@@ -258,22 +235,18 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 function renderTurnstile() {
     if (!config.turnstileSiteKey) return;
 
-    // Load Turnstile script if not already loaded
     if (!window.turnstile) {
         const script = document.createElement('script');
         script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
         script.async = true;
         script.defer = true;
-        script.onload = function() {
-            renderTurnstileWidget();
-        };
+        script.onload = renderTurnstileWidget;
         document.head.appendChild(script);
     } else {
         renderTurnstileWidget();
     }
 }
 
-// Render the actual Turnstile widget
 function renderTurnstileWidget() {
     if (!window.turnstile || !config.turnstileSiteKey) return;
 
@@ -281,10 +254,9 @@ function renderTurnstileWidget() {
     if (!container) return;
 
     container.innerHTML = '';
-
     window.turnstile.render('#turnstile-container', {
         sitekey: config.turnstileSiteKey,
-        theme: 'dark',
+        theme: 'light',
         size: 'normal'
     });
 }
@@ -294,8 +266,5 @@ document.addEventListener('DOMContentLoaded', initializeDomain);
 
 // Track page view
 window.addEventListener('load', () => {
-    trackEvent('page_view', {
-        domain: currentDomain,
-        referrer: document.referrer
-    });
+    trackEvent('page_view', { domain: currentDomain, referrer: document.referrer });
 });
