@@ -10,25 +10,48 @@ const currentDomain = window.location.hostname || 'example.com';
 const domainParts = currentDomain.split('.');
 const tld = domainParts[domainParts.length - 1];
 
+// Animate a number counting up to a target value
+function animateCount(el, target, duration = 950) {
+    if (!el) return;
+    const start = performance.now();
+    const step = (now) => {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased);
+        if (p < 1) {
+            requestAnimationFrame(step);
+        } else {
+            el.textContent = target;
+        }
+    };
+    requestAnimationFrame(step);
+}
+
 // Initialize domain display
 function initializeDomain() {
     // Update domain display
     document.getElementById('domainName').textContent = currentDomain;
-    
+
+    // Fill the mock browser address bar
+    const addressDomain = document.getElementById('addressDomain');
+    if (addressDomain) {
+        addressDomain.textContent = currentDomain;
+    }
+
     // Count only characters before the TLD (excluding dots)
     const domainWithoutTLD = currentDomain.substring(0, currentDomain.lastIndexOf('.'));
     const characterCount = domainWithoutTLD.replace(/\./g, '').length;
-    document.getElementById('domainLength').textContent = characterCount;
-    
+    animateCount(document.getElementById('domainLength'), characterCount);
+
     document.getElementById('domainTLD').textContent = '.' + tld;
-    
+
     // Update page title and meta
     document.title = `${currentDomain} - Premium Domain For Sale`;
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
         ogTitle.content = `${currentDomain} - Premium Domain For Sale`;
     }
-    
+
     // Load domain-specific configuration if available
     loadDomainConfig();
 }
@@ -61,12 +84,11 @@ function applyDomainConfig(domainConfig) {
     // Override Turnstile site key if domain-specific one is provided
     if (domainConfig.turnstileSiteKey) {
         config.turnstileSiteKey = domainConfig.turnstileSiteKey;
-        // Re-render Turnstile with domain-specific key
         renderTurnstile();
     }
 }
 
-// Update features list
+// Update features list (first "Why this name" card)
 function updateFeaturesList(features) {
     const featuresList = document.querySelector('.features-list');
     if (featuresList && features.length > 0) {
@@ -88,13 +110,20 @@ const errorMsg = document.getElementById('errorMessage');
 const spinner = document.getElementById('spinner');
 const submitBtn = form.querySelector('.submit-btn');
 
+function setSubmitting(isSubmitting) {
+    submitBtn.disabled = isSubmitting;
+    if (spinner) {
+        spinner.style.display = isSubmitting ? 'inline-block' : 'none';
+    }
+}
+
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     // Hide any existing messages
     successMsg.style.display = 'none';
     errorMsg.style.display = 'none';
-    
+
     // Validate Turnstile if enabled
     if (config.turnstileSiteKey) {
         const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
@@ -104,12 +133,10 @@ form.addEventListener('submit', async (e) => {
             return;
         }
     }
-    
+
     // Show loading state
-    spinner.style.display = 'inline-block';
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-    
+    setSubmitting(true);
+
     // Get form data
     const formData = new FormData(form);
     const data = {
@@ -121,15 +148,15 @@ form.addEventListener('submit', async (e) => {
         message: formData.get('message'),
         timestamp: new Date().toISOString()
     };
-    
+
     // Add Turnstile token if available
     if (config.turnstileSiteKey) {
         data.turnstileToken = formData.get('cf-turnstile-response');
     }
-    
+
     try {
         let response;
-        
+
         // Always use the Pages Function API endpoint when deployed
         if (window.location.hostname.includes('pages.dev') || window.location.hostname !== 'localhost') {
             response = await fetch('/api/contact', {
@@ -144,7 +171,7 @@ form.addEventListener('submit', async (e) => {
             if (!config.discordWebhook) {
                 throw new Error('Discord webhook not configured for local development');
             }
-            
+
             response = await fetch(config.discordWebhook, {
                 method: 'POST',
                 headers: {
@@ -153,7 +180,7 @@ form.addEventListener('submit', async (e) => {
                 body: JSON.stringify({
                     embeds: [{
                         title: `New Inquiry for ${currentDomain}`,
-                        color: 9061110, // Purple color (#8b5cf6 in decimal)
+                        color: 8317656, // Mint (#7fe6c8 in decimal)
                         fields: [
                             { name: 'Name', value: data.name, inline: true },
                             { name: 'Email', value: data.email, inline: true },
@@ -167,22 +194,22 @@ form.addEventListener('submit', async (e) => {
                 })
             });
         }
-        
+
         if (response.ok || response.status === 204) {
             successMsg.style.display = 'block';
             form.reset();
-            
+
             // Reset Turnstile if present
             if (window.turnstile) {
                 window.turnstile.reset();
             }
-            
+
             // Track conversion event
             trackEvent('form_submission', {
                 domain: currentDomain,
                 success: true
             });
-            
+
             // Scroll to success message
             successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
@@ -192,16 +219,14 @@ form.addEventListener('submit', async (e) => {
         console.error('Error:', error);
         errorMsg.style.display = 'block';
         errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        
+
         trackEvent('form_error', {
             domain: currentDomain,
             error: error.message
         });
     } finally {
         // Reset button state
-        spinner.style.display = 'none';
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send Message';
+        setSubmitting(false);
     }
 });
 
@@ -211,18 +236,12 @@ function trackEvent(eventName, eventData) {
     if (window.zaraz && window.zaraz.track) {
         window.zaraz.track(eventName, eventData);
     }
-    
+
     // Google Analytics (if added)
     if (window.gtag) {
         window.gtag('event', eventName, eventData);
     }
 }
-
-// Add animation delays to cards
-const cards = document.querySelectorAll('.card, .stat-card');
-cards.forEach((card, index) => {
-    card.style.animationDelay = `${index * 0.1}s`;
-});
 
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -250,7 +269,6 @@ function renderTurnstile() {
         };
         document.head.appendChild(script);
     } else {
-        // Script already loaded, just render the widget
         renderTurnstileWidget();
     }
 }
@@ -262,10 +280,8 @@ function renderTurnstileWidget() {
     const container = document.getElementById('turnstile-container');
     if (!container) return;
 
-    // Clear existing widget if any
     container.innerHTML = '';
 
-    // Render new widget
     window.turnstile.render('#turnstile-container', {
         sitekey: config.turnstileSiteKey,
         theme: 'dark',
