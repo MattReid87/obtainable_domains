@@ -98,8 +98,8 @@ input::placeholder, textarea::placeholder { color: rgba(17,17,17,.4); }
 
 .sticker {
     position: absolute;
-    top: clamp(40px, 7vw, 90px);
-    right: clamp(16px, 5vw, 60px);
+    top: -26px;
+    right: -16px;
     z-index: 5;
     background: var(--coral);
     color: #fff;
@@ -116,6 +116,7 @@ input::placeholder, textarea::placeholder { color: rgba(17,17,17,.4); }
 }
 
 .hero-card {
+    position: relative;
     background: #fff;
     border: 3px solid var(--ink);
     box-shadow: 10px 10px 0 var(--ink);
@@ -442,17 +443,17 @@ textarea { resize: vertical; min-height: 90px; }
 /* ---------- Responsive ---------- */
 @media (max-width: 620px) {
     .sticker {
-        top: auto;
-        bottom: -14px;
-        right: 12px;
-        font-size: 14px;
-        padding: 9px 12px;
+        top: -18px;
+        right: -8px;
+        font-size: 13px;
+        padding: 8px 11px;
     }
     .nav-brand { font-size: 13px; }
     .nav-btn { padding: 7px 12px; font-size: 12px; }
     .why-light { transform: rotate(-1deg); }
     .why-dark  { transform: rotate(1deg); }
     .chip-num { font-size: 44px; }
+    .chip-num.sm { font-size: 22px; }
 }
 
 @media (max-width: 400px) {

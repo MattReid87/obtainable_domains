@@ -29,6 +29,26 @@ function animateCount(el, target, duration = 1000) {
     requestAnimationFrame(step);
 }
 
+// Scale the hero domain down so long names never overflow the card
+function fitDomain() {
+    const domain = document.querySelector('.domain');
+    const nameEl = document.getElementById('domainName');
+    const card = domain && domain.closest('.hero-card');
+    if (!domain || !nameEl || !card) return;
+
+    // Reset to the stylesheet (clamp) size before measuring
+    domain.style.fontSize = '';
+
+    const cs = getComputedStyle(card);
+    const avail = card.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const nameWidth = nameEl.getBoundingClientRect().width;
+
+    if (avail > 0 && nameWidth > avail) {
+        const base = parseFloat(getComputedStyle(domain).fontSize);
+        domain.style.fontSize = Math.max(28, base * (avail / nameWidth)) + 'px';
+    }
+}
+
 // Initialize domain display
 function initializeDomain() {
     const dot = currentDomain.lastIndexOf('.');
@@ -61,6 +81,12 @@ function initializeDomain() {
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
         ogTitle.content = `${currentDomain} - Premium Domain For Sale`;
+    }
+
+    // Fit the hero name to the card (re-run once webfonts have loaded)
+    fitDomain();
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitDomain);
     }
 
     // Load domain-specific configuration if available
@@ -263,6 +289,14 @@ function renderTurnstileWidget() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', initializeDomain);
+
+// Re-fit the hero name on resize / orientation change
+let fitScheduled = false;
+window.addEventListener('resize', () => {
+    if (fitScheduled) return;
+    fitScheduled = true;
+    requestAnimationFrame(() => { fitScheduled = false; fitDomain(); });
+});
 
 // Track page view
 window.addEventListener('load', () => {
