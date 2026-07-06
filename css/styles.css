@@ -13,6 +13,11 @@
 }
 
 html, body { margin: 0; padding: 0; }
+html { scroll-padding-top: 70px; }   /* keep anchor targets clear of the sticky nav */
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
 
 body {
     background: var(--acid);
@@ -25,6 +30,12 @@ body {
 a { color: var(--ink); text-decoration: none; }
 ::selection { background: var(--blue); color: #fff; }
 input::placeholder, textarea::placeholder { color: rgba(17,17,17,.4); }
+
+/* Accessible keyboard focus (doesn't fire on mouse/touch) */
+a:focus-visible, button:focus-visible, .nav-btn:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
 
 /* ---------- Nav ---------- */
 .nav {
@@ -72,7 +83,10 @@ input::placeholder, textarea::placeholder { color: rgba(17,17,17,.4); }
     letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 8px 16px;
+    transition: transform 0.1s;
 }
+
+.nav-btn:active { transform: translateY(1px); }
 
 /* ---------- Hero ---------- */
 .hero {
@@ -131,6 +145,7 @@ input::placeholder, textarea::placeholder { color: rgba(17,17,17,.4); }
     text-transform: uppercase;
     color: var(--blue);
     margin-bottom: 14px;
+    padding-right: 72px;   /* clear the corner sticker */
 }
 
 .domain {
@@ -190,6 +205,7 @@ input::placeholder, textarea::placeholder { color: rgba(17,17,17,.4); }
 }
 
 .hero-cta:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--ink); }
+.hero-cta:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
 
 /* ---------- Chips ---------- */
 .chips {
@@ -393,6 +409,7 @@ textarea { resize: vertical; min-height: 90px; }
 }
 
 .submit-btn:hover { transform: translate(-3px, -3px); box-shadow: 10px 10px 0 var(--coral); }
+.submit-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--coral); }
 .submit-btn:disabled { opacity: 0.75; cursor: not-allowed; transform: none; box-shadow: 7px 7px 0 var(--coral); }
 
 /* ---------- Footer ---------- */
@@ -450,6 +467,7 @@ textarea { resize: vertical; min-height: 90px; }
     }
     .nav-brand { font-size: 13px; }
     .nav-btn { padding: 7px 12px; font-size: 12px; }
+    .nav-status { display: none; }   /* keep brand + button on one line */
     .why-light { transform: rotate(-1deg); }
     .why-dark  { transform: rotate(1deg); }
     .chip-num { font-size: 44px; }
@@ -458,5 +476,4 @@ textarea { resize: vertical; min-height: 90px; }
 
 @media (max-width: 400px) {
     .nav-right { gap: 12px; }
-    .nav-status { display: none; }
 }
